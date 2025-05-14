@@ -1,0 +1,75 @@
+/* Use the defined neutral colors and keep it minimal */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--color-neutral-900);
+    /* Dark background for a clean look */
+    color: var(--color-neutral-100);
+    /* Light text for contrast */
+    font-family: var(--font-family-text);
+}
+
+.content {
+    text-align: center;
+    max-width: 400px;
+    padding: 1rem;
+    background-color: var(--color-neutral-800);
+    /* Subtle dark background for the content */
+    border-radius: 8px;
+}
+
+.title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: var(--color-neutral-100);
+    /* White title text */
+}
+
+.tagline {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--color-neutral-400);
+    /* Slightly lighter text for the tagline */
+}
+
+.enterButton {
+    background-color: var(--color-neutral-500);
+    /* Neutral background for button */
+    color: var(--color-neutral-100);
+    /* Light text color */
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-top: 1rem;
+}
+
+.enterButton:hover {
+    background-color: var(--color-neutral-600);
+    /* Slightly darker on hover */
+}
+
+/* Optional: Media Query for Mobile Responsiveness */
+@media (max-width: 600px) {
+    .content {
+        margin: 2rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .tagline {
+        font-size: 1rem;
+    }
+
+    .enterButton {
+        font-size: 1rem;
+        padding: 0.8rem 1.6rem;
+    }
+}

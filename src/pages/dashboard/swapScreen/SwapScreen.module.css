@@ -1,0 +1,316 @@
+/* Container for the entire component */
+.container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    font-family: var(--font-family-text);
+}
+
+/* Main swap tile container */
+.swapTile {
+    flex: 1;
+    min-width: 280px;
+    max-width: 700px;
+    background: var(--color-neutral-100);
+    border: 3px solid #d4d4d462;
+    user-select: none;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+/* Header description */
+.swapDescription {
+    color: var(--color-neutral-400);
+    font-size: 0.8rem;
+}
+
+.number {
+    font-family: var(--font-family-number);
+    font-size: 0.85rem;
+}
+
+/* Action buttons container */
+.swapActions {
+    border: 1px solid var(--color-neutral-300);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    margin: 1rem 0;
+}
+
+/* Individual action button */
+.actionButton {
+    height: 48px;
+    flex: 1;
+    margin: 4px;
+    padding: 6px;
+    background: var(--color-neutral-200);
+    border: 3px solid transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background 150ms ease, border 150ms ease;
+    font-size: 0.85rem;
+}
+
+.actionButton:hover {
+    background: var(--color-neutral-300);
+}
+
+.active {
+    border: 3px solid var(--color-neutral-300);
+}
+
+/* Swap content container */
+.swapContent {
+    position: relative;
+    border: 1px solid var(--color-neutral-300);
+    width: 100%;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Individual swap item (From/To) */
+.swapItem {
+    width: 100%;
+    min-height: 150px;
+    border: 1px solid var(--color-neutral-400);
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: background 150ms ease;
+    box-sizing: border-box;
+}
+
+.swapItem:hover {
+    background: var(--color-neutral-200);
+}
+
+/* Top content (label and dropdown) */
+.topSwapContent {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.topSwapContent p {
+    font-size: 0.8rem;
+    color: var(--color-neutral-400);
+    text-wrap: nowrap;
+}
+
+/* Dropdown container */
+.dropDown {
+    position: relative;
+    width: 140px;
+    font-size: 0.9rem;
+    color: var(--color-neutral-800);
+}
+
+.selected {
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    background: var(--color-neutral-200);
+    border: 1px solid var(--color-neutral-400);
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 150ms ease, border 150ms ease;
+}
+
+.selected:hover {
+    background: var(--color-neutral-300);
+}
+
+.selected img {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
+}
+
+.selected span {
+    font-size: 0.9rem;
+    color: var(--color-neutral-800);
+}
+
+.options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-neutral-100);
+    border: 1px solid var(--color-neutral-400);
+    border-radius: 4px;
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    transition: background 150ms ease;
+}
+
+.option:hover {
+    background: var(--color-neutral-200);
+}
+
+.option img {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
+}
+
+.option span {
+    font-size: 0.9rem;
+    color: var(--color-neutral-800);
+}
+
+/* Specific styles for To/From dropdowns */
+.to {
+    background: var(--color-neutral-500);
+}
+
+.from {
+    background: var(--color-neutral-600);
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Middle content (input) */
+.middleSwapContent {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    text-align: end;
+}
+
+/* Number input */
+.input {
+    width: 100%;
+    font-family: var(--font-family-number);
+    border: none;
+    outline: none;
+    height: 42px;
+    font-size: 1.2rem;
+    text-align: end;
+    background: none;
+    color: var(--color-neutral-800);
+}
+
+.input:focus {
+    outline: none;
+}
+
+/* Swap button */
+.swapButton {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    border-radius: 50%;
+    background: var(--color-neutral-400);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    user-select: none;
+    transition: all 150ms ease;
+}
+
+.swapButton:hover {
+    background: var(--color-neutral-500);
+}
+
+.swapButton:active {
+    transform: translate(-50%, -50%) scale(0.96);
+}
+
+/* Spacing between swap items */
+.swapItem:first-child {
+    margin-bottom: 6px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .swapTile {
+        min-width: 100%;
+        padding: 0.75rem;
+    }
+
+    .dropDown {
+        width: 120px;
+    }
+
+    .input {
+        height: 38px;
+        font-size: 1rem;
+    }
+
+    .actionButton {
+        height: 42px;
+        font-size: 0.75rem;
+        padding: 4px;
+    }
+
+    .selected img,
+    .option img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .swapButton {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .topSwapContent {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .dropDown {
+        width: 100%;
+    }
+}

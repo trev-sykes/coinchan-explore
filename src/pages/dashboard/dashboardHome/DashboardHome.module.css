@@ -1,0 +1,129 @@
+/* General Container */
+.container {
+    max-width: 1100px;
+    font-family: var(--font-family-text);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+/* Card Styles */
+.card {
+    background-color: var(--color-neutral-800);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Section Styles inside the Card */
+.section {
+    margin-bottom: 2rem;
+}
+
+/* Subtitle */
+.subtitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-neutral-200);
+    margin-bottom: 0.75rem;
+}
+
+/* Text inside the card */
+.text {
+    font-size: 1.125rem;
+    color: var(--color-neutral-300);
+    line-height: 1.8;
+}
+
+/* Badge for ERC6909 */
+.badge {
+    display: inline-block;
+    background-color: var(--color-accent);
+    color: var(--color-neutral-100);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+/* Info Row Styles (New) */
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+/* Info Label */
+.infoLabel {
+    font-weight: bold;
+    color: var(--color-neutral-200);
+}
+
+/* Info Value */
+.infoValue {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* Button Styles */
+.ctaButton {
+    background-color: var(--color-accent);
+    color: var(--color-neutral-100);
+    margin-top: 10px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover State for Buttons */
+.ctaButton:hover,
+.connectButton:hover {
+    background-color: var(--color-accent-dark);
+    /* Darker version of accent color */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    .title {
+        font-size: 2.25rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 1.5rem;
+    }
+
+    .text {
+        font-size: 1rem;
+    }
+
+    .section {
+        margin-bottom: 1.25rem;
+    }
+
+    .badge {
+        font-size: 0.875rem;
+        padding: 6px 10px;
+    }
+
+    /* Button Styles for Smaller Screens */
+    .ctaButton {
+        font-size: 0.875rem;
+        padding: 5px 10px;
+        background: none;
+    }
+}

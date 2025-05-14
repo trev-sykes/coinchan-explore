@@ -1,0 +1,422 @@
+.coinsContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    font-family: var(--font-family-text);
+}
+
+/* Search Bar Styling */
+.searchContainer {
+    margin-bottom: 2rem;
+    position: relative;
+    width: 100%;
+}
+
+.searchInput {
+    width: calc(100% - 40px);
+    /* Full width minus space for the icon */
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    /* Padding for the icon */
+    font-size: 1rem;
+    border-radius: 12px;
+    border: 2px solid var(--color-neutral-300);
+    background-color: var(--color-neutral-100);
+    color: var(--color-neutral-900);
+    transition: all 0.3s ease;
+    font-family: var(--font-family-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(242, 169, 0, 0.2);
+}
+
+.searchIcon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-neutral-500);
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.searchClear {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-neutral-500);
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.searchClear:hover {
+    background-color: var(--color-neutral-200);
+    color: var(--color-neutral-700);
+}
+
+/* Title Styling */
+.title {
+    color: var(--color-neutral-900);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* Grid Layout */
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+/* Coin Card Styling */
+.coinCard {
+    background: var(--color-neutral-100);
+    border-radius: 12px;
+    padding: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--color-neutral-200);
+    font-size: 0.8rem;
+}
+
+
+.coinCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.coinCard h3 {
+    color: var(--color-accent);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-neutral-200);
+}
+
+/* Token Details */
+.tokenDetails {
+    margin-bottom: 1.25rem;
+    flex-grow: 1;
+}
+
+.tokenDetails h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.tokenDetails p {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+
+.tokenDetails strong {
+    color: var(--color-neutral-700);
+    font-weight: 600;
+}
+
+.imageContainer {
+    width: 100%;
+    height: 100px;
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: var(--color-neutral-200);
+}
+
+.coinImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+
+/* Coin Info */
+.coinInfo {
+    background-color: var(--color-neutral-200);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: auto;
+}
+
+.coinInfo p {
+    color: var(--color-neutral-700);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    word-break: break-word;
+}
+
+.coinInfo p:last-child {
+    margin-bottom: 0;
+}
+
+.coinInfo strong {
+    color: var(--color-neutral-800);
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+/* Loading and Error Messages */
+.loading {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--color-neutral-600);
+    font-size: 1.25rem;
+}
+
+.error {
+    background-color: #fecaca;
+    color: #b91c1c;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+/* Loading animation */
+.loading::after {
+    content: '';
+    animation: ellipsis 1.5s infinite;
+}
+
+@keyframes ellipsis {
+    0% {
+        content: '.';
+    }
+
+    33% {
+        content: '..';
+    }
+
+    66% {
+        content: '...';
+    }
+}
+
+/* Responsive Design Adjustments */
+/* Tablet and below (≤ 1024px) */
+@media (max-width: 1024px) {
+    .gridContainer {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Tablets and smaller devices */
+@media (max-width: 768px) {
+    .gridContainer {
+        grid-template-columns: repeat(3, 1fr);
+        /* 3 columns for tablets */
+        gap: 1rem;
+    }
+
+    .coinsContainer {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Mobile portrait view */
+@media (max-width: 480px) {
+    .gridContainer {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    .coinCard {
+        padding: 1.25rem;
+    }
+
+    .imageContainer {
+        height: 60px;
+    }
+
+    .coinInfo p {
+        flex-direction: column;
+        /* Stack the coin info for mobile */
+    }
+
+    .searchInput {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+    }
+
+}
+
+/* Animation for Coin Cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.coinCard {
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+/* Staggered animation for grid items */
+.gridContainer .coinCard:nth-child(3n+1) {
+    animation-delay: 0.1s;
+}
+
+.gridContainer .coinCard:nth-child(3n+2) {
+    animation-delay: 0.2s;
+}
+
+.gridContainer .coinCard:nth-child(3n+3) {
+    animation-delay: 0.3s;
+}
+
+/* Add a subtle shimmer effect for loading state */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.coinCard.loading {
+    background: linear-gradient(90deg, var(--color-neutral-100) 25%, var(--color-neutral-200) 50%, var(--color-neutral-100) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Dark Mode Styling */
+@media (prefers-color-scheme: dark) {
+    .coinCard {
+        background: var(--color-neutral-800);
+        border-color: var(--color-neutral-700);
+    }
+
+    .coinCard h3 {
+        color: var(--color-accent);
+        border-bottom-color: var(--color-neutral-700);
+    }
+
+    .tokenDetails h4 {
+        color: var(--color-neutral-200);
+    }
+
+    .tokenDetails p {
+        color: var(--color-neutral-300);
+    }
+
+    .tokenDetails strong {
+        color: var(--color-neutral-200);
+    }
+
+    .imageContainer {
+        background-color: var(--color-neutral-700);
+    }
+
+    .coinInfo {
+        background-color: var(--color-neutral-700);
+    }
+
+    .coinInfo p {
+        color: var(--color-neutral-300);
+    }
+
+    .coinInfo strong {
+        color: var(--color-neutral-200);
+    }
+
+    .searchInput {
+        background-color: var(--color-neutral-800);
+        border-color: var(--color-neutral-700);
+        color: var(--color-neutral-200);
+    }
+
+    .searchInput::placeholder {
+        color: var(--color-neutral-500);
+    }
+
+    .noResults {
+        background-color: var(--color-neutral-800);
+        color: var(--color-neutral-300);
+    }
+
+    .searchClear:hover {
+        background-color: var(--color-neutral-700);
+        color: var(--color-neutral-300);
+    }
+}
+
+/* Scroll to Top Button */
+.scrollToTopButton {
+    width: 50px;
+    height: 50px;
+    position: fixed;
+    bottom: 75px;
+    right: 30px;
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 0.75rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: none;
+    /* Hidden by default */
+    transition: opacity 0.3s ease-in-out;
+    z-index: 100;
+}
+
+.scrollToTopButton.show {
+    display: block;
+    /* Show button when user scrolls */
+}
+
+.scrollToTopButton:hover {
+    background-color: var(--color-accent-dark);
+}
+
+@media (max-width: 480px) {
+    .scrollToTopButton {
+        bottom: 20px;
+        right: 20px;
+        padding: 0.5rem;
+    }
+
+    .coinCard {
+        max-height: 160px;
+    }
+}
