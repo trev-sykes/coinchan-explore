@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from './CoinDetailModal.module.css';
 import { convertToIpfsUrl } from '../../../utils/ipfs';
 
@@ -12,9 +12,8 @@ interface CoinDetailModalProps {
     ethPrice: any;
 }
 
-export const CoinDetailModal: React.FC<CoinDetailModalProps> = ({ isOpen, onClose, coin, metadata, ethPrice }) => {
+export const CoinDetailModal: React.FC<CoinDetailModalProps> = ({ isOpen, onClose, coin, metadata }) => {
     if (!coin || !metadata) return null;
-    const totalSupply = 21000000;
     return (
         <div className={`${styles.modalOverlay} ${isOpen ? 'active' : ''}`}>
             <div className={styles.modalContent}>
