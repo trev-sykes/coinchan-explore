@@ -84,7 +84,7 @@
 
 /* Coin Card Styling */
 .coinCard {
-    background: var(--color-neutral-100);
+    background: var(--color-neutral-800);
     border-radius: 12px;
     padding: 0.75rem;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
