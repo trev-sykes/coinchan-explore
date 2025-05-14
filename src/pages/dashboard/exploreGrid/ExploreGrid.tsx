@@ -4,10 +4,13 @@ import { useInView } from 'react-intersection-observer';
 import styles from './ExploreGrid.module.css';
 import { convertToIpfsUrl } from '../../../utils/ipfs';
 import { fetchTokenMetadata } from '../../../utils/metadata';
-import { scrollToTop } from '../../../utils/scroll'; // optional
+import { scrollToTop } from '../../../utils/scroll';
 import { CoinDetailModal } from '../../../components/common/coinDetailModal/CoinDetailModal';
 import { fetchETHPrice } from '../../../hooks/useEthPrice';
 import { BarLoader } from 'react-spinners';
+
+const ITEMS_PER_PAGE = 25;
+
 interface CoinMetadata {
     name: string;
     symbol: string;
@@ -16,117 +19,125 @@ interface CoinMetadata {
 }
 
 export const ExploreGrid: React.FC = () => {
-    const { data, error, isLoading } = useAllCoinsData();
-    const [isMetadataLoading, setIsMetadataLoading] = useState(true);
+    const { data, error, isLoading: initialLoading } = useAllCoinsData();
+
+    const [page, setPage] = useState(0);
+    const [visibleCoins, setVisibleCoins] = useState<any[]>([]);
     const [coinMetadata, setCoinMetadata] = useState<{ [key: string]: CoinMetadata }>({});
+    const [isMetadataLoading, setIsMetadataLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredData, setFilteredData] = useState<any>();
     const [selectedCoin, setSelectedCoin] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [ethPrice, setEthPrice] = useState<any>();
-    const [width, setWidth] = useState<any>(window.innerWidth);
+    const [width, setWidth] = useState(window.innerWidth);
+    const [showScrollButton, setShowScrollButton] = useState(false);
+    const [isLoadingPage, setIsLoadingPage] = useState(false);
 
-
-
-    const { ref } = useInView({
+    const { ref, inView } = useInView({
         triggerOnce: false,
         threshold: 0.2,
     });
 
-    const [showScrollButton, setShowScrollButton] = useState(false);
-    // Control changes in the window width
+    // Handle window resizing
     useEffect(() => {
-        const handleResize = () => {
-            setWidth(window.innerWidth);
-        }
+        const handleResize = () => setWidth(window.innerWidth);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [window.innerWidth]);
-    // Detect if the user has scrolled down
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 200) {
-                setShowScrollButton(true);
-            } else {
-                setShowScrollButton(false);
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
     }, []);
 
-
-    // Fetch metadata for all coins
+    // Scroll-to-top button toggle
     useEffect(() => {
-        const fetchAllMetadata = async () => {
-            if (data && data.length > 0) {
-                setIsMetadataLoading(true);
-                const metadata: { [key: string]: CoinMetadata } = {};
-                for (let coin of data) {
-                    const metadataForCoin = await fetchTokenMetadata(coin.tokenURI);
-                    if (metadataForCoin) {
-                        metadata[coin.coinId.toString()] = metadataForCoin;
-                    }
-                }
-                setCoinMetadata(metadata);
-                setIsMetadataLoading(false);
-            }
+        const handleScroll = () => setShowScrollButton(window.scrollY > 200);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Load ETH price once
+    useEffect(() => {
+        const getEthPrice = async () => {
+            const price = await fetchETHPrice();
+            setEthPrice(price);
         };
-        fetchAllMetadata();
-    }, [data]);
+        getEthPrice();
+    }, []);
 
-
-    // Debounced filtering
+    // Load next page of coins when `inView` is true and not loading already
     useEffect(() => {
-        if (!data) return;
+        if (inView && data && !searchTerm && !isLoadingPage) {
+            setIsLoadingPage(true);
+            setPage((prev) => prev + 1);
+        }
+    }, [inView, data, searchTerm, isLoadingPage]);
 
-        const timeout = setTimeout(() => {
-            if (!searchTerm.trim()) {
-                setFilteredData(data);
+    // Load visible coins when page changes or data is ready
+    useEffect(() => {
+        const loadVisibleCoins = async () => {
+            if (!data || searchTerm) {
+                setIsLoadingPage(false);
                 return;
             }
 
-            const searchTermLower = searchTerm.toLowerCase();
-            const filtered = data.filter((coin) => {
-                const metadata = coinMetadata[coin.coinId.toString()];
-                if (!metadata) return false;
+            const start = page * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
 
+            // If no more coins to load, stop loading
+            if (start >= data.length) {
+                setIsLoadingPage(false);
+                return;
+            }
+
+            const nextCoins = data.slice(start, end);
+
+            setVisibleCoins((prev) => [...prev, ...nextCoins]);
+
+            setIsMetadataLoading(true);
+            const newMetadata: { [key: string]: CoinMetadata } = {};
+
+            for (const coin of nextCoins) {
+                const meta = await fetchTokenMetadata(coin.tokenURI);
+                if (meta) {
+                    newMetadata[coin.coinId.toString()] = meta;
+                }
+            }
+
+            setCoinMetadata((prev) => ({ ...prev, ...newMetadata }));
+            setIsMetadataLoading(false);
+
+            setIsLoadingPage(false);
+        };
+
+        loadVisibleCoins();
+    }, [page, data, searchTerm]);
+
+    // Filtered coins (debounced) — runs when user types in search
+    const [filteredCoins, setFilteredCoins] = useState<any[]>([]);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            if (!searchTerm.trim()) {
+                setFilteredCoins([]);
+                return;
+            }
+
+            const term = searchTerm.toLowerCase();
+            const results = data?.filter((coin) => {
+                const meta = coinMetadata[coin.coinId.toString()];
                 return (
-                    metadata.name?.toLowerCase().includes(searchTermLower) ||
-                    metadata.symbol?.toLowerCase().includes(searchTermLower) ||
-                    metadata.description?.toLowerCase().includes(searchTermLower)
+                    meta &&
+                    (meta.name?.toLowerCase().includes(term) ||
+                        meta.symbol?.toLowerCase().includes(term) ||
+                        meta.description?.toLowerCase().includes(term))
                 );
             });
 
-            setFilteredData(filtered);
-        }, 300); // debounce delay in ms
+            setFilteredCoins(results || []);
+        }, 300);
 
-        return () => clearTimeout(timeout);
+        return () => clearTimeout(handler);
     }, [searchTerm, data, coinMetadata]);
 
-    useEffect(() => {
-        const getEthPrice = async () => {
-            const ethPrice = await fetchETHPrice();
-            setEthPrice(ethPrice);
-            console.log("ETH price set", ethPrice);
-        }
-        getEthPrice();
-    }, []);
-    // Handle search input change
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
-    };
+    const coinsToDisplay = searchTerm ? filteredCoins : visibleCoins;
 
-    // Clear search
-    const handleClearSearch = () => {
-        setSearchTerm('');
-    };
-
-    // Handle loading and error states
-    if (isLoading && !data) return <div className={styles.loading}>Loading coins...</div>;
+    if (initialLoading && !data) return <div className={styles.loading}>Loading coins...</div>;
     if (error) return <div className={styles.error}>Error: {error.message}</div>;
 
     return (
@@ -135,7 +146,13 @@ export const ExploreGrid: React.FC = () => {
 
             {/* Search Bar */}
             <div className={styles.searchContainer}>
-                <svg className={styles.searchIcon} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                    className={styles.searchIcon}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
@@ -143,81 +160,92 @@ export const ExploreGrid: React.FC = () => {
                     className={styles.searchInput}
                     placeholder="Search by name, symbol or description..."
                     value={searchTerm}
-                    onChange={handleSearchChange}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {searchTerm && (
-                    <button
-                        className={styles.searchClear}
-                        onClick={handleClearSearch}
-                        aria-label="Clear search"
-                    >
+                    <button className={styles.searchClear} onClick={() => setSearchTerm('')} aria-label="Clear search">
                         ✕
                     </button>
                 )}
             </div>
 
-            {filteredData && filteredData.length > 0 ? (
-                <div className={styles.gridContainer}>
-                    {filteredData.map((coin: any, index: number) => (
-                        <div
-                            key={index}
-                            className={styles.coinCard}
-                            onClick={() => {
-                                setSelectedCoin(coin);
-                                setIsModalOpen(true);  // Explicitly set modal to open
-                                console.log('Modal state:', true);  // This will show that the modal is being opened
-                            }}
-                            ref={index === filteredData.length - 1 ? ref : null}
-                        >
+            {/* Grid of Coins */}
+            {coinsToDisplay.length > 0 ? (
+                <>
+                    <div className={styles.gridContainer}>
+                        {coinsToDisplay.map((coin, index) => {
+                            const meta = coinMetadata[coin.coinId.toString()];
+                            const isLast = index === coinsToDisplay.length - 1;
 
-                            <div className={styles.tokenDetails}>
-                                {coinMetadata[coin.coinId.toString()] ? (
-                                    <>
-                                        {width > 720 && <h4>{coinMetadata[coin.coinId.toString()]?.name}</h4>}
-                                        <p><strong>{width > 720 && 'Symbol: '}</strong> {width < 720 && coinMetadata[coin.coinId.toString()]?.symbol.length < 7 ? coinMetadata[coin.coinId.toString()]?.symbol : coinMetadata[coin.coinId.toString()]?.symbol.slice(0, 7)}</p>
-                                        {width > 720 && <p>{coinMetadata[coin.coinId.toString()]?.description.length > 50 ? coinMetadata[coin.coinId.toString()]?.description.slice(0, 50) : coinMetadata[coin.coinId.toString()]?.description}</p>}
-                                        <div className={styles.imageContainer}>
-                                            {coinMetadata[coin.coinId.toString()]?.image && (
-                                                <img
-                                                    src={convertToIpfsUrl(coinMetadata[coin.coinId.toString()]?.image)}
-                                                    onError={(e) => (e.currentTarget.src = '/favicon-light.png')}
-                                                    alt={`${coinMetadata[coin.coinId.toString()]?.name || 'Coin'} icon`}
-                                                    className={styles.coinImage}
-                                                    loading="lazy"
-                                                />
-                                            )}
-                                        </div>
-                                    </>
-                                ) : isMetadataLoading ? (
-                                    <BarLoader />
-                                ) : (
-                                    <p>Metadata not available</p>
-                                )}
-                            </div>
+                            return (
+                                <div
+                                    key={coin.coinId}
+                                    className={styles.coinCard}
+                                    onClick={() => {
+                                        setSelectedCoin(coin);
+                                        setIsModalOpen(true);
+                                    }}
+                                    ref={!searchTerm && isLast ? ref : null}
+                                >
+                                    <div className={styles.tokenDetails}>
+                                        {meta ? (
+                                            <>
+                                                {width > 720 && <h4>{meta.name}</h4>}
+                                                <p>
+                                                    <strong>{width > 720 && 'Symbol: '}</strong>
+                                                    {meta.symbol.length < 7 ? meta.symbol : meta.symbol.slice(0, 7)}
+                                                </p>
+                                                {width > 720 && (
+                                                    <p>{meta.description.length > 50 ? meta.description.slice(0, 50) : meta.description}</p>
+                                                )}
+                                                <div className={styles.imageContainer}>
+                                                    {meta.image && (
+                                                        <img
+                                                            src={convertToIpfsUrl(meta.image)}
+                                                            onError={(e) => (e.currentTarget.src = '/favicon-light.png')}
+                                                            alt={`${meta.name || 'Coin'} icon`}
+                                                            className={styles.coinImage}
+                                                            loading="lazy"
+                                                        />
+                                                    )}
+                                                </div>
+                                            </>
+                                        ) : isMetadataLoading ? (
+                                            <BarLoader />
+                                        ) : (
+                                            <p>Metadata not available</p>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Loading more indicator */}
+                    {isLoadingPage && (
+                        <div className={styles.loadingMore}>
+                            <BarLoader />
                         </div>
-                    ))}
-                </div>
+                    )}
+                </>
             ) : (
                 <div className={styles.noResults}>
-                    {searchTerm ? (
-                        <>No coins found matching "{searchTerm}"</>
-                    ) : (
-                        <>No coins available</>
-                    )}
+                    {searchTerm ? <>No coins found matching "{searchTerm}"</> : <>No coins available</>}
                 </div>
-            )
-            }
-            {isModalOpen && (<CoinDetailModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                coin={selectedCoin}
-                metadata={selectedCoin ? coinMetadata[selectedCoin.coinId.toString()] : null}
-                ethPrice={ethPrice}
-            />)}
-            {/* Bottom loading indicator for more coins */}
-            {isLoading && data && <div className={styles.loading}>Loading more coins...</div>}
+            )}
 
-            {/* Scroll to Top Button */}
+            {/* Coin Modal */}
+            {isModalOpen && (
+                <CoinDetailModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    coin={selectedCoin}
+                    metadata={selectedCoin ? coinMetadata[selectedCoin.coinId.toString()] : null}
+                    ethPrice={ethPrice}
+                />
+            )}
+
+            {/* Scroll to Top */}
             <button
                 className={`${styles.scrollToTopButton} ${showScrollButton ? styles.show : ''}`}
                 onClick={scrollToTop}
@@ -225,6 +253,6 @@ export const ExploreGrid: React.FC = () => {
             >
                 ↑
             </button>
-        </div >
+        </div>
     );
 };
