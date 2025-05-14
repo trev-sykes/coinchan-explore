@@ -72,7 +72,6 @@ const Input: React.FC<InputProps> = ({ input, onChange }) => (
 
 export const SwapScreen: React.FC = () => {
     const [activeSection, setActiveSection] = useState<"swap" | "liquidity">("swap");
-    const [swappedDestination, setSwappedDestination] = useState(false);
     const [toInput, setToInput] = useState("");
     const [fromInput, setFromInput] = useState("");
     const [toOption, setToOption] = useState(exampleOptions[0]);
@@ -81,7 +80,6 @@ export const SwapScreen: React.FC = () => {
     const [fromOpen, setFromOpen] = useState(false);
 
     const handleSwapButtonClick = () => {
-        setSwappedDestination((prev) => !prev);
         setToOption(fromOption);
         setFromOption(toOption);
         setToInput(fromInput);
